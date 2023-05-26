@@ -1,0 +1,2 @@
+class FunctionError(Exception):
+    pass

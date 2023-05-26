@@ -1,0 +1,2 @@
+class CreateModuleError(Exception):
+    pass
