@@ -52,14 +52,11 @@ class Task:
         self.__status__ = status
 
     @property
-    def launch_time(self) -> TaskStatus:
-        return self.__status__
+    def launch_time(self) -> datetime.datetime:
+        return self.__launch_time__
 
     @launch_time.setter
-    def launch_time(self, launch_time: TaskStatus = None) -> None:
-
-        if self.status in [TaskStatus.WORKING, TaskStatus.COMPLETED]:
-            raise SetTaskLaunchTimeError("The task status does not allow you to change the launch time.")
+    def launch_time(self, launch_time: datetime.datetime = None) -> None:
 
         match type(launch_time):
             case datetime.datetime:

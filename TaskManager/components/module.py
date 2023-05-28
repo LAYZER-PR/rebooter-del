@@ -177,7 +177,7 @@ class Module:
             if self.__status__ is not ModuleStatus.ACTIVE:
                 continue
 
-            gen = self.TASKS_MANAGER.get_tasks(module=self.name, status=TaskStatus.WAITING)
+            gen = self.TASKS_MANAGER.get_tasks(module=self.name, status=TaskStatus.WAITING, now_time=True)
             for thread_id, thread in self.__concurrences__.items():
                 if thread['status'] is ThreadStatus.WAITING:
                     try:

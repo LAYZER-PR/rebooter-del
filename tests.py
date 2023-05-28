@@ -14,7 +14,7 @@ async def main():
         threads=5
     )
 
-    # await create_task(module='test', account='account', logger=1, ff=3, hh7=6)
+    await create_task(module='test', account='account', logger=1, ff=3, hh7=6)
 
     await asyncio.sleep(5)
     module.threads = 3

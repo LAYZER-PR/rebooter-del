@@ -1,3 +1,5 @@
+import datetime
+
 from simple_singleton import Singleton
 
 from ..components import Module
@@ -12,16 +14,30 @@ class TasksManager(metaclass=Singleton):
     def __init__(self):
         pass
 
-    async def get_tasks(self, module: str | Module, task: int = None, status: TaskStatus | list[TaskStatus] = None
-                        ) -> dict[int, Task]:
+    async def get_tasks(
+            self,
+            module: str | Module,
+            tasks: int | list[int] = None,
+            status: TaskStatus | list[TaskStatus] = None,
+            now_time: bool = None
+    ) -> dict[int, Task]:
 
         if not isinstance(module, str) and not isinstance(module, Module):
             raise GetTasksError("Argument 'module' must be an Module or module name.")
 
-        if task is not None and not isinstance(task, int):
-            raise GetTasksError("Argument 'task' must be an integer or None.")
+        if tasks:
+            if isinstance(tasks, int):
+                tasks = [tasks]
 
-        if status is not None:
+            elif isinstance(tasks, list):
+                if not all(isinstance(s, int) for s in tasks):
+                    raise GetTasksError(
+                        "All elements of the 'tasks' list must be integer values.")
+            else:
+                raise GetTasksError(
+                    "Argument 'tasks' must be a integer value, a list of integer values, or None.")
+
+        if status:
             if isinstance(status, TaskStatus):
                 status = [status]
 
@@ -34,31 +50,34 @@ class TasksManager(metaclass=Singleton):
                     "Argument 'status' must be a TaskStatus value, a list of TaskStatus values, or None.")
 
         module = module if isinstance(module, str) else module.name
-
         module_tasks = self.__tasks__.get(module, {})
-        result_tasks = {}
 
-        if isinstance(task, int):
-            task_obj = module_tasks.get(task)
-            if task_obj:
-                yield {task: task_obj}
-                # result_tasks[task] = task_obj
+        if tasks:
+            for number in tasks:
+                task_obj = module_tasks.get(number)
+                if task_obj:
+                    if now_time and task_obj.launch_time > datetime.datetime.now():
+                        continue
 
-        if status is not None:
-            if isinstance(status, list):
-                for number, task_obj in module_tasks.items():
-                    if task_obj.status in status:
-                        yield {number: task_obj}
+                    if status and task_obj.status not in status:
+                        continue
 
-            else:
-                for number, task_obj in module_tasks.items():
-                    if task_obj.status == status:
-                        yield {number: task_obj}
+                    yield {number: task_obj}
 
-                        # result_tasks[number] = task_obj
 
-        if not task and not status:
-            yield module_tasks
+        elif status:
+            for number, task_obj in module_tasks.items():
+                if task_obj.status in status:
+                    if now_time and task_obj.launch_time > datetime.datetime.now():
+                        continue
+
+                    yield {number: task_obj}
+
+        else:
+            for number, task_obj in module_tasks.items():
+                if now_time and task_obj.launch_time > datetime.datetime.now():
+                    continue
+                yield {number: task_obj}
 
         # return result_tasks
 
