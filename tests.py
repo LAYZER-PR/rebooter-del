@@ -1,9 +1,8 @@
-from TaskManager.components import FC
-
-from TaskManager.lib.helpers.tasks import create_task
-from TaskManager.lib.helpers.modules import create_module
-
 import asyncio
+
+from TaskManager.components import FC
+from TaskManager.lib.helpers.modules import create_module
+from TaskManager.lib.helpers.tasks import create_task
 
 
 async def main():

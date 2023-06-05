@@ -1,2 +1,0 @@
-class AddModuleError(Exception):
-    pass
